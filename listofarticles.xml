@@ -10,25 +10,27 @@
     <version>1.3.9</version>
     <description>List of Articles Plugin v 1.3.9</description>
 	
-    <files>
-        <filename plugin="listofarticles">listofarticles.php</filename>
-	<filename>render.php</filename>
-    </files>
+	<files>
+	        <filename plugin="listofarticles">listofarticles.php</filename>
+		<filename>render.php</filename>
+	</files>
 	
-    <config>
-	<fields name="params">
-		<fieldset name="basic">
-    
-		<field  name="articlecssclass" type="text" default="" label="Artile List CSS Class" description="" />
-		<field  name="menucssclass" type="text" default="" label="Menu List CSS Class" description="" />
-		
-		</fieldset>
-        </fields>
-    </config>
-	
-    <languages>
-        <language tag="en-GB">language/en-GB/en-GB.plg_content_listofarticles.ini</language>
-    </languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field  name="articlecssclass" type="text" default="" label="Artile List CSS Class" description="" />
+				<field  name="menucssclass" type="text" default="" label="Menu List CSS Class" description="" />
+				<field type="list" name="addslash" default="0" label="Add slash character" description="Add slash character before image path." >
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+			</fieldset>
+		</fields>
+	</config>
+
+	<languages>
+        	<language tag="en-GB">language/en-GB/en-GB.plg_content_listofarticles.ini</language>
+	</languages>
 
 
 	<updateservers>

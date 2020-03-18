@@ -50,6 +50,7 @@ class ListofArticles
 {
     var $articlecssclass;
     var $menucssclass;
+	var $addslash;
 
     function renderListOfArticles($text, &$params)
     {
@@ -855,7 +856,7 @@ function LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption, $csssty
 		}
 		else
 		{
-			$img='<img src="/'.$src.'" title="'.$title.'" alt="'.$title.'" />';
+			$img='<img src="'.($this->addslash ? '/' : '').$src.'" title="'.$title.'" alt="'.$title.'" />';
 
 			if($addlink)
             {
@@ -906,7 +907,7 @@ function LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption, $csssty
 		}
 		else
 		{
-			$img='<img src="/'.$src.'" title="'.$title.'" alt="'.$title.'" />';
+			$img='<img src="'.($this->addslash ? '/' : '').$src.'" title="'.$title.'" alt="'.$title.'" />';
 
 			if($addlink)
 				return '<a href="'.$link.'" title="'.$title.'"'.($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'><div><button class="btn button btn-primary">'.$img.'<span>'.$title.'</span></button></div></a>';

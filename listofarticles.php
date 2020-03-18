@@ -22,7 +22,8 @@ defined('_JEXEC') or die('Restricted access');
 
 			$LOA->articlecssclass=$this->params->get( 'articlecssclass' );
 			$LOA->menucssclass=$this->params->get( 'menucssclass' );
-
+			$LOA->addslash=(bool)(int)$this->params->get( 'addslash' );
+			
 			$article->text=$LOA->renderListOfArticles ($article->text, $params);
 		}
 	}
