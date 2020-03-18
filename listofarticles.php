@@ -1,7 +1,6 @@
 <?php
 /**
 * List of Articles Joomla! 3.x Native Plugin
-* @version 1.3.9
 * @author Ivan Komlev <support@joomlaboat.com>
 * @co-developer Darren Forster <darrenforster99@gmail.com>
 * @link https://joomlaboat.com

@@ -2,7 +2,7 @@
 <extension version="2.5" type="plugin" group="content" method="upgrade">
     <name>List of Articles</name>
     <author>Ivan Komlev</author>
-    <creationDate>May 2019</creationDate>
+    <creationDate>March 2020</creationDate>
     <copyright>Copyright (C) 2010-2020 Ivan Komlev. All rights reserved.</copyright>
     <license>GNU General Public License</license>
     <authorEmail>support@joomlaboat.com</authorEmail>
