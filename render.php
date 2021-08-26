@@ -8,7 +8,6 @@
 
 if (!class_exists('ListofArticles')) {
 
-
 defined('_JEXEC') or die('Restricted access');
 
 //Which mode to operate in - ArticleList or MenuList
@@ -85,7 +84,7 @@ class ListofArticles
 									case	PLUGIN	:	return ( 'menuitemsoftype' ) ;
 									case	DB		:	return ( 'menu' ) ;
 									case	SEARCH	:	return ( 'menutype' ) ;
-									case	COLS	:	return ( 'id,title,link,menutype,type,params' ) ;
+									case	COLS	:	return ( 'id,title,link,menutype,type,params,lft,rgt,language,alias,path,parent_id,level' ) ;
 									case	ORDER	:	return ( 'lft' ) ;
 								}
 			case	ARTICLELIST	:	switch ( $Val )
@@ -134,15 +133,12 @@ function replaceWith ( $options, $mode )
 {
 	$catid =0;
 	$opts = $this->Options ( $this->LOAcsv_explode ( OPTSEP,$options, '"',false), $catid ) ;
-
 	$orderby_field=$opts[ORDER]; //{***=CATEGORY ID, |COLUMNS|, |START|, |LIMIT|, |ORDER BY|}
-
 
 	$rows = $this->LOAgetRows ( $catid, $mode, $orderby_field, $opts[START], $opts[LIMIT], $opts[SHOWACTIVELINK], $opts[EXCLUDELIST], $opts[RECURSIVE] ) ;
 
 	if(!isset($opts[COL]))
 		$opts[COL]=1;
-
 
 	switch ( $mode )
 	{
@@ -181,11 +177,10 @@ function replaceWith ( $options, $mode )
 				else
 					$separator=',';
 
-				if($opts[OPT_VALUEFIELD])
+				if(isset($opts[OPT_VALUEFIELD]))
 					$valueoption=$opts[OPT_VALUEFIELD];
 				else
 					$valueoption='title';
-
 
 				return $this->LOAmakeMenuCleanLinks ( $rows, 0, $opts[SHOWACTIVELINK], $separator, $valueoption,  $opts[CSSSTYLE],$opts[IMAGEREPLACER_POS] );
 			}
@@ -228,8 +223,6 @@ function Options ( $opts, &$catid )
 	else
 		$ret[ORDER] ='';
 
-
-
 	if(isset($opts[SHOWACTIVELINK]))
 		$ret[SHOWACTIVELINK] = strip_tags($opts[SHOWACTIVELINK]);
 	else
@@ -270,22 +263,19 @@ function Options ( $opts, &$catid )
 	else
 		$ret[IMAGEREPLACER_POS] = '';
 
-	return ( $ret ) ;
+	return $ret;
 }
 
 function isTrue ( $check, $val1, $val2 ) {	return ( $check ? $val1 : $val2 ) ; }
 function retSearch ( $Search ) { return ( '="'.( $Search == '' ? '%' : $Search ).'"' ) ; }
 function replaceText ( $fList, $options, $text, $Mode,  $count)
 {
-
-
 	if($count==count( $fList ))
 		return $text;
 	else
 	{
 		return $this->replaceText ($fList, $options, str_replace ( $fList[$count], $this->replaceWith ( $options[$count], $Mode ), $text ), $Mode, $count+1 ) ;
 	}
-
 }
 
 function LOAmakeLink ($link, $title, $sep=false, $showactivelink,$id, $current_id, $metadesc, $cssstyle)
@@ -751,49 +741,69 @@ function LOAmakeMenuCleanLinks ($rows, $count, $showactivelink, $separator, $val
 			return $v.$separator.$v_next;
 		else
 			return $v;
-
 	}
-
 }
 
 
-function LOAmakeMenuCleanLink ( $row,$showactivelink, $valueoption_str, $cssstyle,$imagereplacer)
+function LOAmakeMenuCleanLink($row,$showactivelink, $valueoption_str, $cssstyle,$imagereplacer)
 {
+	if(strpos($valueoption_str,'json:') !== false)
+	{
+		$alowed_fields = ['id','title','link','lft','rgt','menutype','type','language','params','alias','path','parent_id','level'];
+		$valueoptions=explode(',',str_replace('json:','',$valueoption_str));
+		
+		$menu_items = [];
+		foreach($valueoptions as $valueoption)
+		{
+			if(in_array($valueoption,$alowed_fields))
+			{
+				if($valueoption == 'title')
+					$menu_items[$valueoption] = $this->JTextExtended($row->title);
+				elseif($valueoption == 'link')
+					$menu_items[$valueoption] = JRoute::_($row->link.'&Itemid='.$row->id);
+				elseif($valueoption == 'params')
+					$menu_items[$valueoption] = json_decode($row->params);
+				else
+				{
+					$row_array = (array)$row;
+					$menu_items[$valueoption] = $row_array[$valueoption];
+				}
+			}
+		}
+	
+		return json_encode((object)$menu_items);
+	}
+	
 	$output='';
 	$valueoptions=explode(',',$valueoption_str);
-
+			
 	if(count($valueoptions)==1)
-		return $this->LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption_str, $cssstyle,true,$imagereplacer);
+		return $this->LOAmakeMenuCleanLink_Item($row,$showactivelink, $valueoption_str, $cssstyle,true,$imagereplacer);
 
 	foreach($valueoptions as $valueoption)
-	{
-		$output.=$this->LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption, $cssstyle,false,$imagereplacer);
-	}
-
+		$output.=$this->LOAmakeMenuCleanLink_Item ($row,$showactivelink, $valueoption, $cssstyle,false,$imagereplacer);
+		
 	$title=$row->title;
-
 	$link=JRoute::_($row->link.'&Itemid='.$row->id);
-
 	$output='<div>'.$output.'</div>';
+	return '<a href="'.$link.'" title="'.$title.'"'.($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$output.'</a>';;
 
-	$a='<a href="'.$link.'" title="'.$title.'"'.($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$output.'</a>';
-
-	return $a;
 }
 
-function LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption, $cssstyle,$addlink=true,$imagereplacer)
+function LOAmakeMenuCleanLink_Item( $row,$showactivelink, $valueoption, $cssstyle,$addlink=true,$imagereplacer)
 {
     $jinput = JFactory::getApplication()->input;
 
 	if($valueoption=='title' or $valueoption=='name')
 	{
         $title=$this->JTextExtended($row->title);
+		
 		return '<span>'.$title.'</span>';
 	}
 	elseif($valueoption=='lft')
 		return $row->lft;
-	elseif($valueoption=='rtg')
-		return $row->rtg;
+	elseif($valueoption=='rgt')
+		return $row->rgt;
 	elseif($valueoption=='language')
 		return $row->language;
 	elseif($valueoption=='link')
@@ -835,9 +845,6 @@ function LOAmakeMenuCleanLink_Item ( $row,$showactivelink, $valueoption, $csssty
 
 			}
 		}
-
-        //echo '$valueoption='.$valueoption.'<br/>';
-        //echo '$options[1]='.$options[1];
 
 		$link=JRoute::_($row->link.'&Itemid='.$row->id);
 
@@ -1041,7 +1048,7 @@ function buildOrder ( $Mode, $orderby_field)
 	}
 	else
 	{
-			$fieldlist=array('title','lft','rtg','language');
+			$fieldlist=array('title','lft','rgt','language');
 			if(!in_array($orderby_field,$fieldlist))
 				$orderby_field='lft';
 
@@ -1394,12 +1401,6 @@ function getMenuParam($param, $rawparams)
 		return $cat_list;
 
 	}
-
-
-
-
-
-
 
     function JTextExtended($text)
     {
