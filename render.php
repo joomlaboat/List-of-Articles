@@ -106,28 +106,17 @@ class ListofArticles
 								}
 		}
 
-
 		return '';
+	}
 
-
-}
-
-
-
-function CreateList ( &$text_original, $Mode)
-{
-
-    $text=$this->strip_html_tags_textarea($text_original);
-
-	$options = array () ;
-    $looking_for=$this->retVals (PLUGIN,$Mode);
-
-	$fList=$this->LOAgetListToReplace($this->retVals (PLUGIN,$Mode),$options,$text);
-
-
-	$text_original = $this->replaceText ( $fList, $options, $text_original, $Mode, 0 ) ;
-
-}
+	function CreateList ( &$text_original, $Mode)
+	{
+		$text=$this->strip_html_tags_textarea($text_original);
+		$options = array () ;
+		$looking_for=$this->retVals (PLUGIN,$Mode);
+		$fList=$this->LOAgetListToReplace($this->retVals (PLUGIN,$Mode),$options,$text);
+		$text_original = $this->replaceText ( $fList, $options, $text_original, $Mode, 0 ) ;
+	}
 
 function replaceWith ( $options, $mode )
 {
@@ -266,126 +255,125 @@ function Options ( $opts, &$catid )
 	return $ret;
 }
 
-function isTrue ( $check, $val1, $val2 ) {	return ( $check ? $val1 : $val2 ) ; }
-function retSearch ( $Search ) { return ( '="'.( $Search == '' ? '%' : $Search ).'"' ) ; }
-function replaceText ( $fList, $options, $text, $Mode,  $count)
-{
-	if($count==count( $fList ))
-		return $text;
-	else
+	function isTrue ( $check, $val1, $val2 ) {	return ( $check ? $val1 : $val2 ) ; }
+
+	function retSearch ( $Search ) { return ( '="'.( $Search == '' ? '%' : $Search ).'"' ) ; }
+	
+	function replaceText ( $fList, $options, $text, $Mode,  $count)
 	{
-		return $this->replaceText ($fList, $options, str_replace ( $fList[$count], $this->replaceWith ( $options[$count], $Mode ), $text ), $Mode, $count+1 ) ;
+		if($count==count( $fList ))
+			return $text;
+		else
+			return $this->replaceText ($fList, $options, str_replace ( $fList[$count], $this->replaceWith ( $options[$count], $Mode ), $text ), $Mode, $count+1 ) ;
 	}
-}
 
-function LOAmakeLink ($link, $title, $sep=false, $showactivelink,$id, $current_id, $metadesc, $cssstyle)
-{
-	$metadesc_=urldecode($metadesc);
-	$metadesc_=str_replace('"','',$metadesc_);
-
-	if($showactivelink=='showinactive' and $id==$current_id)
-		$linkitem =$this->JTextExtended($title);
-	else
-		$linkitem = '<a href="'.$link.'"'.($metadesc_!='' ? ' title="'.$metadesc_.'"' : '').($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($title).'</a>';
-
-	return ( $sep ? '<li class="separator">'.$this->JTextExtended($title).'</li>':'<li>'.$linkitem .'</li>' );
-}
-function LOAmakeLink_forTable ($link, $title, $sep=false, $showactivelink, $id, $current_id, $metadesc, $cssstyle)
-{
-	$metadesc_=urldecode($metadesc);
-	$metadesc_=str_replace('"','',$metadesc_);
-
-	if(($showactivelink=='showinactive' and $id==$current_id) or $sep)
-		$linkitem =$this->JTextExtended($title);
-	else
-		$linkitem = '<a href="'.$link.'"'.($metadesc_!='' ? ' title="'.$metadesc_.'"' : '').($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($title).'</a>';
-
-	return $linkitem;
-}
-
-function LOAmakeArticleCleanLink ( $row,$showactivelink, $valueoption_withparams, $cssstyle)
-{
-    $jinput = JFactory::getApplication()->input;
-
-    $parts=explode(':',$valueoption_withparams);
-
-    $valueoption=$parts[0];
-    $params='';
-    if(isset($parts[1]))
-    {
-        $p=array();
-        for($i=1;$i<count($parts);$i++)
-            $p[]=$parts[$i];
-
-        $params=implode(':',$p);
-    }
-
-    //article fields
-	if($valueoption=='title')
-    {
-		return $row->title;
-    }
-	elseif($valueoption=='created')
-    {
-        if($params!='')
-        {
-            $phpdate =strtotime($row->created);
-			return date($params, $phpdate);
-        }
-        else
-    		return $row->created;
-
-    }
-    elseif($valueoption=='modified')
-    {
-        if($params!='')
-        {
-            $phpdate =strtotime($row->modified);
-			return date($params, $phpdate);
-        }
-        else
-    		return $row->modified;
-    }
-	elseif($valueoption=='publish_up')
-    {
-        if($params!='')
-        {
-            $phpdate =strtotime($row->publish_up);
-			return date($params, $phpdate);
-        }
-        else
-    		return $row->publish_up;
-    }
-	elseif($valueoption=='ordering')
-		return $row->ordering;
-	elseif($valueoption=='metadata')
-		return $row->metadata;
-	elseif($valueoption=='metakey')
-		return $row->metakey;
-	elseif($valueoption=='featured')
-		return $row->featured;
-	elseif($valueoption=='language')
-		return $row->language;
-	elseif($valueoption=='hits')
-		return $row->hits;
-	elseif($valueoption=='link')
-		return JRoute::_($this->LOAmakeArticleLinkOnly($row));
-	elseif($valueoption=='linkandtitle')
+	function LOAmakeLink ($link, $title, $sep=false, $showactivelink,$id, $current_id, $metadesc, $cssstyle)
 	{
-	    if($showactivelink=='showinactive')
-	    {
-            if($jinput->getInt ('id', 0)==$row->id)
-                return $this->JTextExtended($row->title);
-	    }
+		$metadesc_=urldecode($metadesc);
+		$metadesc_=str_replace('"','',$metadesc_);
 
-	    return '<a href="'.$this->LOAmakeArticleLinkOnly($row).'" title="'.$this->JTextExtended($row->title).'"'.($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($row->title).'</a>';
+		if($showactivelink=='showinactive' and $id==$current_id)
+			$linkitem =$this->JTextExtended($title);
+		else
+			$linkitem = '<a href="'.$link.'"'.($metadesc_!='' ? ' title="'.$metadesc_.'"' : '').($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($title).'</a>';
+
+		return ( $sep ? '<li class="separator">'.$this->JTextExtended($title).'</li>':'<li>'.$linkitem .'</li>' );
 	}
-	elseif($valueoption=='encodedlink')
-		return urlencode(JRoute::_($this->LOAmakeArticleLinkOnly($row)));
-    else
-        return 'Field "'.$valueoption.'" not found/accepted.';
+	
+	function LOAmakeLink_forTable ($link, $title, $sep=false, $showactivelink, $id, $current_id, $metadesc, $cssstyle)
+	{
+		$metadesc_=urldecode($metadesc);
+		$metadesc_=str_replace('"','',$metadesc_);
 
-}
+		if(($showactivelink=='showinactive' and $id==$current_id) or $sep)
+			$linkitem =$this->JTextExtended($title);
+		else
+			$linkitem = '<a href="'.$link.'"'.($metadesc_!='' ? ' title="'.$metadesc_.'"' : '').($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($title).'</a>';
+		return $linkitem;
+	}
+
+	function LOAmakeArticleCleanLink ( $row,$showactivelink, $valueoption_withparams, $cssstyle)
+	{
+		$jinput = JFactory::getApplication()->input;
+
+		$parts=explode(':',$valueoption_withparams);
+
+		$valueoption=$parts[0];
+		$params='';
+		
+		if(isset($parts[1]))
+		{
+			$p=array();
+			for($i=1;$i<count($parts);$i++)
+				$p[]=$parts[$i];
+
+			$params=implode(':',$p);
+		}
+
+		//article fields
+		if($valueoption=='title')
+		{
+			return $row->title;
+		}
+		elseif($valueoption=='created')
+		{
+			if($params!='')
+			{
+				$phpdate =strtotime($row->created);
+				return date($params, $phpdate);
+			}
+			else
+				return $row->created;
+		}
+		elseif($valueoption=='modified')
+		{
+			if($params!='')
+			{
+				$phpdate =strtotime($row->modified);
+				return date($params, $phpdate);
+			}
+			else
+				return $row->modified;
+		}
+		elseif($valueoption=='publish_up')
+		{
+			if($params!='')
+			{
+				$phpdate =strtotime($row->publish_up);
+				return date($params, $phpdate);
+			}
+			else
+				return $row->publish_up;
+		}
+		elseif($valueoption=='ordering')
+			return $row->ordering;
+		elseif($valueoption=='metadata')
+			return $row->metadata;
+		elseif($valueoption=='metakey')
+			return $row->metakey;
+		elseif($valueoption=='featured')
+			return $row->featured;
+		elseif($valueoption=='language')
+			return $row->language;
+		elseif($valueoption=='hits')
+			return $row->hits;
+		elseif($valueoption=='link')
+			return JRoute::_($this->LOAmakeArticleLinkOnly($row));
+		elseif($valueoption=='linkandtitle')
+		{
+			if($showactivelink=='showinactive')
+			{
+				if($jinput->getInt ('id', 0)==$row->id)
+					return $this->JTextExtended($row->title);
+			}
+			
+			return '<a href="'.$this->LOAmakeArticleLinkOnly($row).'" title="'.$this->JTextExtended($row->title).'"'.($cssstyle!='' ? ' style="'.$cssstyle.'"' : '').'>'.$this->JTextExtended($row->title).'</a>';
+		}
+		elseif($valueoption=='encodedlink')
+			return urlencode(JRoute::_($this->LOAmakeArticleLinkOnly($row)));
+		else
+			return 'Field "'.$valueoption.'" not found/accepted.';
+	}
 
 
 function LOAmakeArticleLink ($row, $showactivelink, $valueoption_withparams, $cssstyle)
@@ -557,45 +545,38 @@ function LOAmakeArticleLink_forTable ($row, $showactivelink, $valueoption_withpa
 	return $this->LOAmakeLink_forTable ( $aLink, $this->JTextExtended($title),false, $showactivelink, $row->id,$jinput->getInt ('id', 0), $metadesc, $cssstyle);
 }
 
-function LOAmakeArticleLinks ( $rows, $count, $showactivelink, $valueoption, $cssstyle)
-{
-	if($count==count ($rows))
+	function LOAmakeArticleLinks ( $rows, $count, $showactivelink, $valueoption, $cssstyle)
 	{
-		return '';
-	}
-	else
-	{
-		return $this->LOAmakeArticleLink ($rows[$count],$showactivelink, $valueoption, $cssstyle).$this->LOAmakeArticleLinks ($rows, $count+1, $showactivelink,$valueoption, $cssstyle) ;
-	}
-
-
-}
-
-function LOAmakeArticleCleanLinks ( $rows, $count, $showactivelink, $separator, $valueoption,$cssstyle)
-{
-	if($count==count ($rows))
-	{
-		return '';
-	}
-	else
-	{
-		$v=$this->LOAmakeArticleCleanLink ($rows[$count],$showactivelink, $valueoption,$cssstyle);
-		$v_next=$this->LOAmakeArticleCleanLinks (  $rows, $count+1, $showactivelink, $separator, $valueoption,$cssstyle);
-		if($v_next!='')
-			return $v.$separator.$v_next;
+		if($count==count ($rows))
+		{
+			return '';
+		}
 		else
-			return $v;
-
+		{
+			return $this->LOAmakeArticleLink ($rows[$count],$showactivelink, $valueoption, $cssstyle).$this->LOAmakeArticleLinks ($rows, $count+1, $showactivelink,$valueoption, $cssstyle) ;
+		}
 	}
 
+	function LOAmakeArticleCleanLinks ( $rows, $count, $showactivelink, $separator, $valueoption,$cssstyle)
+	{
+		if($count==count ($rows))
+		{
+			return '';
+		}
+		else
+		{
+			$v=$this->LOAmakeArticleCleanLink ($rows[$count],$showactivelink, $valueoption,$cssstyle);
+			$v_next=$this->LOAmakeArticleCleanLinks (  $rows, $count+1, $showactivelink, $separator, $valueoption,$cssstyle);
+			if($v_next!='')
+				return $v.$separator.$v_next;
+			else
+				return $v;
+		}
+	}
 
-}
-
-
-
-function LOAmakeArticleList($rows, $showactivelink, $valueoption, $cssstyle)
-{
-	return ( '<!-- System Plugin:List of Article List Style -->'
+	function LOAmakeArticleList($rows, $showactivelink, $valueoption, $cssstyle)
+	{
+		return ( '<!-- System Plugin:List of Article List Style -->'
 				.($this->articlecssclass ? '<div class="'.$this->articlecssclass.'">' : '')
 				.'<ul>'
 				.$this->LOAmakeArticleLinks ( $rows, 0, $showactivelink, $valueoption, $cssstyle)
@@ -603,34 +584,32 @@ function LOAmakeArticleList($rows, $showactivelink, $valueoption, $cssstyle)
 				.($this->articlecssclass ? '</div>' : '')
 				)
 			;
-}
+	}
 
-function LOAmarkArticleLinkCol ($rows, $cols, $start, $count, $showactivelink, $valueoption, $cssstyle)
-{
-	if(($count+$start == count ( $rows ) )	 ||	( $count==$cols ) ) return '';
+	function LOAmarkArticleLinkCol ($rows, $cols, $start, $count, $showactivelink, $valueoption, $cssstyle)
+	{
+		if(($count+$start == count ( $rows ) )	 ||	( $count==$cols ) ) return '';
 
-	$result='<td>';
+		$result='<td>';
+		$result.=$this->LOAmakeArticleLink_forTable ( $rows[$count+$start], $showactivelink, $valueoption, $cssstyle).'</td>';
+		$result_=$this->LOAmarkArticleLinkCol ( $rows, $cols, $start, $count+1, $showactivelink, $valueoption, $cssstyle);
+	
+		if($result_=='' and $cols-$count-1>0)
+			$result.=str_repeat ('<td></td>', $cols-$count-1);
+		else
+			$result.=$result_;
+		
+		return $result;
+	}
 
-	$result.=$this->LOAmakeArticleLink_forTable ( $rows[$count+$start], $showactivelink, $valueoption, $cssstyle).'</td>';
-
-
-	$result_=$this->LOAmarkArticleLinkCol ( $rows, $cols, $start, $count+1, $showactivelink, $valueoption, $cssstyle);
-	if($result_=='' and $cols-$count-1>0)
-		$result.=str_repeat ('<td></td>', $cols-$count-1);
-	else
-		$result.=$result_;
-
-	return $result;
-}
-
-function LOAmarkArticleLinkTable ($rows, $cols, $count,$showactivelink, $valueoption, $cssstyle)
-{
-	if($count >= count ( $rows ))
-		return '';
-	else
-		return '<tr>'.$this->LOAmarkArticleLinkCol ($rows, $cols, $count, 0,$showactivelink, $valueoption, $cssstyle).'</tr>'
-        .$this->LOAmarkArticleLinkTable ( $rows, $cols, $count + $cols, $showactivelink, $valueoption, $cssstyle) ;
-}
+	function LOAmarkArticleLinkTable ($rows, $cols, $count,$showactivelink, $valueoption, $cssstyle)
+	{
+		if($count >= count ( $rows ))
+			return '';
+		else
+			return '<tr>'.$this->LOAmarkArticleLinkCol ($rows, $cols, $count, 0,$showactivelink, $valueoption, $cssstyle).'</tr>'
+				.$this->LOAmarkArticleLinkTable ( $rows, $cols, $count + $cols, $showactivelink, $valueoption, $cssstyle) ;
+	}
 
 function LOAmakeArticleListTable($rows,$cols,$showactivelink, $valueoption, $cssstyle,$isVertical)
 {
@@ -704,6 +683,7 @@ function LOAmakeMenuListLink ($row, $showactivelink, $cssstyle)
 	return $this->LOAmakeLink ( $menuitem_Link, $row->title, ( $row->menutype == 'separator' ),$showactivelink, $row->id, $jinput->getInt ('Itemid', 0), $metadesc, $cssstyle) ;
 
 }
+
 function LOAmakeMenuListLink_forTable ($row ,$showactivelink, $cssstyle)
 {
     $jinput = JFactory::getApplication()->input;
@@ -719,7 +699,6 @@ function LOAmakeMenuListLink_forTable ($row ,$showactivelink, $cssstyle)
 		else
 			$menuitem_Link=$row->link.'&amp;Itemid='.$row->id;
 	}
-
 
 	$metadesc=$this->getMenuParam('menu-meta_description', $row->params);
 	return $this->LOAmakeLink_forTable ( $menuitem_Link, $row->title, ( $row->menutype == 'separator' ),$showactivelink, $row->id, $jinput->getInt ('Itemid', 0), $metadesc, $cssstyle);
@@ -944,16 +923,17 @@ function LOAmakeMenuCleanLink_Item( $row,$showactivelink, $valueoption, $cssstyl
 }
 
 
-function LOAmakeMenuListLinks ($rows, $count, $showactivelink, $cssstyle)
-{
-	return (
+	function LOAmakeMenuListLinks ($rows, $count, $showactivelink, $cssstyle)
+	{
+		return (
 			$count==count($rows)
 			?
 				''
 			:
 				$this->LOAmakeMenuListLink ($rows[$count],$showactivelink, $cssstyle).$this->LOAmakeMenuListLinks ($rows, $count+1, $showactivelink, $cssstyle)
 		);
-}
+	}
+	
 function LOAmakeMenuList($rows,$showactivelink, $cssstyle)
 {
 	return (
@@ -968,18 +948,12 @@ function LOAmakeMenuList($rows,$showactivelink, $cssstyle)
 
 }
 
-
-
 function LOAmakeMenuListCol ($rows, $cols, $start, $count, $showactivelink, $cssstyle)
 {
-
 	if(($count+$start == count ( $rows ) )	||	( $count==$cols ) ) return '';
 
-
 	$result='<td>';
-
 	$result.=$this->LOAmakeMenuListLink_forTable ($rows[$count+$start], $showactivelink, $cssstyle).'</td>';
-
 
 	$result_=$this->LOAmakeMenuListCol ($rows, $cols, $start, $count+1, $showactivelink, $cssstyle);
 	if($result_=='' and $cols-$count-1>0)
@@ -989,32 +963,25 @@ function LOAmakeMenuListCol ($rows, $cols, $start, $count, $showactivelink, $css
 
 	return $result;
 }
+
 function LOAmakeMenuListRow ($rows, $cols, $count, $showactivelink, $cssstyle)
 {
 	if($count >= count ( $rows ))
 		return '';
 	else
 		return  '<tr>'.$this->LOAmakeMenuListCol ($rows, $cols, $count, 0,$showactivelink, $cssstyle).'</tr>'.$this->LOAmakeMenuListRow ($rows, $cols, $count + $cols, $showactivelink, $cssstyle);
-
 }
-
 
 function LOAmakeMenuListTable ($rows, $cols, $showactivelink, $cssstyle)
 {
 	return (
-
-			($this->menucssclass ? '<div class="'.$this->menucssclass.'">' : '')
-			.'<table><tbody>'
-			.$this->LOAmakeMenuListRow ($rows, $cols, 0, $showactivelink, $cssstyle)
-
-
-
-			.'</tbody></table>'
-			.($this->menucssclass ? '</div>' : '')
-			)
-	;
+		($this->menucssclass ? '<div class="'.$this->menucssclass.'">' : '')
+		.'<table><tbody>'
+		.$this->LOAmakeMenuListRow ($rows, $cols, 0, $showactivelink, $cssstyle)
+		.'</tbody></table>'
+		.($this->menucssclass ? '</div>' : '')
+		);
 }
-
 
 //Builds SQL
 function buildSelect ( $Mode ) { return ( 'SELECT '.$this->retVals( COLS, $Mode ) ) ; }
@@ -1036,23 +1003,22 @@ function buildOrder ( $Mode, $orderby_field)
 
 	if($Mode==ARTICLELIST)
 	{
-            $parts=explode(':',$orderby_field);//to separate from posible parameters, like date format
+        $parts=explode(':',$orderby_field);//to separate from posible parameters, like date format
 
-			$fieldlist=array('title','created','modified','publish_up','ordering','metadata','metakey','featured','language','hits');
+		$fieldlist=array('title','created','modified','publish_up','ordering','metadata','metakey','featured','language','hits');
 
-			if(!in_array($parts[0],$fieldlist))
-				$orderby_field='ordering';
+		if(!in_array($parts[0],$fieldlist))
+			$orderby_field='ordering';
 
-			$orderby_field='#__content.'.$orderby_field;
-
+		$orderby_field='#__content.'.$orderby_field;
 	}
 	else
 	{
-			$fieldlist=array('title','lft','rgt','language');
-			if(!in_array($orderby_field,$fieldlist))
-				$orderby_field='lft';
+		$fieldlist=array('title','lft','rgt','language');
+		if(!in_array($orderby_field,$fieldlist))
+			$orderby_field='lft';
 
-			$orderby_field='#__menu.'.$orderby_field;
+		$orderby_field='#__menu.'.$orderby_field;
 	}
 
 	if($isDesc)
@@ -1063,29 +1029,23 @@ function buildOrder ( $Mode, $orderby_field)
 
 function buildQuery ( $Search, $Mode, $orderby_field, $showactivelink, $excludelist,$Recursive)
 {
+	$db = JFactory::getDBO();
+	$query = $db->getQuery(true);
+	$query->select($this->retVals(COLS, $Mode ));
+	$query->from('#__'.$this->retVals ( DB, $Mode ));
 
+	if($Mode == ARTICLELIST)
+	{
+		//For MySQL
+		$query->join('LEFT', '#__menu ON INSTR('.$db->quoteName('link').', CONCAT("index.php?option=com_content&view=article&id=",#__content.id)) ' );
+	}
 
-		$db = JFactory::getDBO();
-		$query = $db->getQuery(true);
-		$query->select($this->retVals(COLS, $Mode ));
-		$query->from('#__'.$this->retVals ( DB, $Mode ));
-
-		if($Mode == ARTICLELIST)
-		{
-			//For MySQL
-			$query->join('LEFT', '#__menu ON INSTR(`link`, CONCAT("index.php?option=com_content&view=article&id=",#__content.id)) ' );
-		}
-
-		$query->where($this->buildSearch ( $Search, $Mode, $showactivelink, $excludelist,$Recursive ));
-
-
+	$query->where($this->buildSearch ( $Search, $Mode, $showactivelink, $excludelist,$Recursive ));
 
 	if($Mode==ARTICLELIST)
-			$query.=' GROUP BY #__content.id';
-
+		$query.=' GROUP BY #__content.id';
 
 	$query .=	$this->buildOrder ( $Mode, $orderby_field );
-
 
 	return $query;
 }
@@ -1094,9 +1054,7 @@ function buildQuery ( $Search, $Mode, $orderby_field, $showactivelink, $excludel
 function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive)
 {
 	$jinput = JFactory::getApplication()->input;
-
 	$db = JFactory::getDBO();
-
 	$where=array();
 
 	if($Mode == MENULIST)
@@ -1109,16 +1067,13 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 		$where[]=$this->retVals( SEARCH,$Mode ).$this->retSearch ($Search );
 
         if(!$Recursive)
-		{
 			$where[]='parent_id=1';
-		}
 
-		    $langObj=JFactory::getLanguage();
-		    $nowLang=$langObj->getTag();
+	    $langObj=JFactory::getLanguage();
+	    $nowLang=$langObj->getTag();
 
-			$where[]='(language="*" OR language="'.$nowLang.'")';
-			$where[]='parent_id!=0';
-
+		$where[]='(language="*" OR language="'.$nowLang.'")';
+		$where[]='parent_id!=0';
 
 		if($showactivelink=='' or $showactivelink=='no' or $showactivelink=='hide')
 			$where[]='id!='.$jinput->getInt ('Itemid',0);
@@ -1130,10 +1085,9 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 		}
 		$w=array();
 
-
 		$user = JFactory::getUser();
 
-      $userid = $user->get('id');
+		$userid = $user->get('id');
 		if($userid==0)
 		{
 			$w[]='access=1';
@@ -1141,7 +1095,6 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 		else
 		{
 			$groups = JAccess::getGroupsByUser($userid);
-
 
 			foreach($groups as $group)
 				$w[]='access in (SELECT id FROM #__viewlevels WHERE FIND_IN_SET("'.$group.'",rules )
@@ -1152,31 +1105,25 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 		}
 
 		$where[]='('.implode(' OR ',$w).')';
-
 		$where[]="!INSTR(params,'\"menu_show\":0')";
-
 	}
 	else
 	{
-
 		if($showactivelink=='' or $showactivelink=='no' or $showactivelink=='hide')
 			$where[]='#__content.id!='.$jinput->getInt ('id',0);
 
-	        $langObj=JFactory::getLanguage();
-			$nowLang=$langObj->getTag();
+        $langObj=JFactory::getLanguage();
+		$nowLang=$langObj->getTag();
 
-			// Filter by start and end dates.
-			$nullDate = $db->Quote($db->getNullDate());
-			$date = JFactory::getDate();
-			$nowDate = $db->Quote($date->toSql());
+		// Filter by start and end dates.
+		$nullDate = $db->Quote($db->getNullDate());
+		$date = JFactory::getDate();
+		$nowDate = $db->Quote($date->toSql());
 
-			$where[]='(#__content.language="*" OR #__content.language="'.$nowLang.'")';
-			$where[]='#__content.state=1';
-			$where[]='(#__content.publish_up = ' . $nullDate . ' OR #__content.publish_up <= ' . $nowDate . ')';
-			$where[]='(#__content.publish_down = ' . $nullDate . ' OR #__content.publish_down >= ' . $nowDate . ')';
-
-
-
+		$where[]='(#__content.language="*" OR #__content.language="'.$nowLang.'")';
+		$where[]='#__content.state=1';
+		$where[]='(#__content.publish_up = ' . $nullDate . ' OR #__content.publish_up <= ' . $nowDate . ')';
+		$where[]='(#__content.publish_down = ' . $nullDate . ' OR #__content.publish_down >= ' . $nowDate . ')';
 
 		if($Recursive)
 		{
@@ -1199,22 +1146,16 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 
 	}
 
-		$where_str=implode(' AND ' , $where);
-		return $where_str;
+	$where_str=implode(' AND ' , $where);
+	return $where_str;
 }
-
-
-
 
 function LOAgetRows ( $Search, $Mode, $orderby_field, $startindex, $limit, $showactivelink, $excludelist,$Recursive)
 {
-
 	if($Recursive=='true')
         $Recursive=true;
     else
         $Recursive=false;
-
-
 
 	$langObj=JFactory::getLanguage();
 	$nowLang=$langObj->getTag();
@@ -1224,27 +1165,22 @@ function LOAgetRows ( $Search, $Mode, $orderby_field, $startindex, $limit, $show
 
 	$query=$this->buildQuery ( $Search, $Mode, $orderby_field, $showactivelink, $excludelist,$Recursive);
 
-		if($limit>0 and $startindex>0)
-			$db->setQuery($query, $startindex, $limit);
-		elseif($limit>0)
-			$db->setQuery($query, 0, $limit);
-		elseif($startindex>0)
-			$db->setQuery($query, $startindex);
-		elseif($startindex==0 && $limit ==0)
-			$db->setQuery($query);
-
-
+	if($limit>0 and $startindex>0)
+		$db->setQuery($query, $startindex, $limit);
+	elseif($limit>0)
+		$db->setQuery($query, 0, $limit);
+	elseif($startindex>0)
+		$db->setQuery($query, $startindex);
+	elseif($startindex==0 && $limit ==0)
+		$db->setQuery($query);
 
 	if (!$db->query())
 		die ( $db->stderr());
 
 	$rows=$db->loadObjectList();
 
-
-
 	return ( $rows );
 }
-
 
 function Length ( $Text, $Match, $Offset, $Mode ) {	$ret = $this->Find ( $Text, $Match, $Offset, $Mode ) ;	return ( $ret !== -1 ? $ret - $Offset + 2 : $ret ) ; }
 function SplitOptions ( $Text, $PreTxt ) { return ( $this->MidStr ( $Text, strlen ( $PreTxt ) - 1, strlen ( $Text ) -1 ) ) ; }
@@ -1351,10 +1287,7 @@ function getMenuParam($param, $rawparams)
 			$where[]='#__content.catid='.$catid; //Parent Category
 		}
 
-
 		$where_query='('.implode(' OR ',$where).')';
-
-
 		return $where_query;
 	}
 
@@ -1364,42 +1297,34 @@ function getMenuParam($param, $rawparams)
 
 		$db = JFactory::getDBO();
 
+		$query = $db->getQuery(true);
+	    $query->select($db->quoteName('id').','.$db->quoteName('parent_id').','.$db->quoteName('title'));
+	    $query->from('#__categories');
+	    $query->where($db->quoteName('extension').'='.$db->quote('com_content'));
 
-			$query = $db->getQuery(true);
-	                $query->select('`id`, `parent_id`, `title`');
-	                $query->from('#__categories');
-	                $query->where('`extension`="com_content"');
+		if ($add_parent)
+			$query->where('('.$db->quoteName('parent_id').'='.(int)$catid.' or '.$db->quoteName('id').'='.(int)$catid.')');
+		else
+			$query->where($db->quoteName('parent_id').'='.(int)$catid);
 
-			if ($add_parent)
-				$query->where('(`parent_id`='.$catid.' or `id`='.$catid.')');
-			else
-				$query->where('`parent_id`='.$catid);
+		$query->order($db->quoteName('title'));
 
-			$query->order('`title`');
-
-                $db->setQuery((string)$query);
-                $recs = $db->loadObjectList();
-
+		$db->setQuery((string)$query);
+        $recs = $db->loadObjectList();
 
 		foreach($recs as $c)
 		{
-
-				if($c->id!=$catid)
-				{
-					$cat_list[]=array('id'=>$c->id, 'parent_id'=>$c->parent_id, 'title'=>$c->title);
-					$kids=$this->getCategoriesRecursive($c->id,false);
-					if(count($kids)!=0)
-					{
-						$cat_list=array_merge($cat_list,$kids);
-					}
-
-				}
-				elseif($add_parent)
-					$cat_list[]=array('id'=>$c->id, 'parent_id'=>$c->parent_id, 'title'=>$c->title);
-
+			if($c->id!=$catid)
+			{
+				$cat_list[]=array('id'=>$c->id, 'parent_id'=>$c->parent_id, 'title'=>$c->title);
+				$kids=$this->getCategoriesRecursive($c->id,false);
+				if(count($kids)!=0)
+					$cat_list=array_merge($cat_list,$kids);
+			}
+			elseif($add_parent)
+				$cat_list[]=array('id'=>$c->id, 'parent_id'=>$c->parent_id, 'title'=>$c->title);
 		}
 		return $cat_list;
-
 	}
 
     function JTextExtended($text)
@@ -1428,11 +1353,8 @@ function getMenuParam($param, $rawparams)
         }
         else
             return $new_text;
-
     }
-
 }//class
-
 
 
 }//if(!method_exists(__CLASS__, 'ListofArticles')){
