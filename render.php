@@ -52,6 +52,8 @@ class ListofArticles
 
     function renderListOfArticles($text, &$params)
     {
+		require ('misc.php');
+		
     	$this->CreateList ( $text, ARTICLELIST) ;
     	$this->CreateList ( $text, MENULIST) ;
 
@@ -728,7 +730,7 @@ function LOAmakeMenuCleanLink($row,$showactivelink, $valueoption_str, $cssstyle,
 {
 	if(strpos($valueoption_str,'json:') !== false)
 	{
-		$alowed_fields = ['id','title','link','lft','rgt','menutype','type','language','params','alias','path','parent_id','level'];
+		$alowed_fields = ['id','title','link','lft','rgt','menutype','type','language','params','alias','path','parent_id','level','component','view'];
 		$valueoptions=explode(',',str_replace('json:','',$valueoption_str));
 		
 		$menu_items = [];
@@ -736,12 +738,18 @@ function LOAmakeMenuCleanLink($row,$showactivelink, $valueoption_str, $cssstyle,
 		{
 			if(in_array($valueoption,$alowed_fields))
 			{
+				$link_parts = explode('?',$row->link);
+				
 				if($valueoption == 'title')
 					$menu_items[$valueoption] = $this->JTextExtended($row->title);
 				elseif($valueoption == 'link')
 					$menu_items[$valueoption] = JRoute::_($row->link.'&Itemid='.$row->id);
 				elseif($valueoption == 'params')
 					$menu_items[$valueoption] = json_decode($row->params);
+				elseif($valueoption == 'component')
+					$menu_items['component'] = ListofArticlesMisc::getURLQueryOption($row->link,'option');
+				elseif($valueoption == 'view')
+					$menu_items['view'] = ListofArticlesMisc::getURLQueryOption($row->link,'view');
 				else
 				{
 					$row_array = (array)$row;
