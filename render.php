@@ -578,8 +578,8 @@ function LOAmakeArticleLink_forTable ($row, $showactivelink, $valueoption_withpa
 
 	function LOAmakeArticleList($rows, $showactivelink, $valueoption, $cssstyle)
 	{
-		return ( '<!-- System Plugin:List of Article List Style -->'
-				.($this->articlecssclass ? '<div class="'.$this->articlecssclass.'">' : '')
+		//return ( '<!-- Content Plugin:List of Article List Style -->'
+		return (($this->articlecssclass ? '<div class="'.$this->articlecssclass.'">' : '')
 				.'<ul>'
 				.$this->LOAmakeArticleLinks ( $rows, 0, $showactivelink, $valueoption, $cssstyle)
 				.'</ul>'
@@ -1130,8 +1130,8 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 
 		$where[]='(#__content.language="*" OR #__content.language="'.$nowLang.'")';
 		$where[]='#__content.state=1';
-		$where[]='(#__content.publish_up = ' . $nullDate . ' OR #__content.publish_up <= ' . $nowDate . ')';
-		$where[]='(#__content.publish_down = ' . $nullDate . ' OR #__content.publish_down >= ' . $nowDate . ')';
+		$where[]='(#__content.publish_up IS NULL OR #__content.publish_up = ' . $nullDate . ' OR #__content.publish_up <= ' . $nowDate . ')';
+		$where[]='(#__content.publish_down IS NULL OR #__content.publish_down = ' . $nullDate . ' OR #__content.publish_down >= ' . $nowDate . ')';
 
 		if($Recursive)
 		{
@@ -1155,6 +1155,7 @@ function buildSearch ( $Search, $Mode, $showactivelink, $excludelist, $Recursive
 	}
 
 	$where_str=implode(' AND ' , $where);
+	
 	return $where_str;
 }
 
@@ -1293,6 +1294,7 @@ function getMenuParam($param, $rawparams)
 		}
 
 		$where_query='('.implode(' OR ',$where).')';
+
 		return $where_query;
 	}
 

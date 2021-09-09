@@ -7,8 +7,8 @@
     <license>GNU General Public License</license>
     <authorEmail>support@joomlaboat.com</authorEmail>
     <authorUrl>http://www.joomlaboat.com/</authorUrl>
-    <version>1.4.1</version>
-    <description>List of Articles Plugin v 1.4.1</description>
+    <version>1.4.2</version>
+    <description>List of Articles Plugin v 1.4.2</description>
 	
 	<files>
 	        <filename plugin="listofarticles">listofarticles.php</filename>
