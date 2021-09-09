@@ -1182,9 +1182,6 @@ function LOAgetRows ( $Search, $Mode, $orderby_field, $startindex, $limit, $show
 	elseif($startindex==0 && $limit ==0)
 		$db->setQuery($query);
 
-	if (!$db->query())
-		die ( $db->stderr());
-
 	$rows=$db->loadObjectList();
 
 	return ( $rows );
