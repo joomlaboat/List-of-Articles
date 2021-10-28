@@ -269,8 +269,10 @@ function Options ( $opts, &$catid )
 			return $this->replaceText ($fList, $options, str_replace ( $fList[$count], $this->replaceWith ( $options[$count], $Mode ), $text ), $Mode, $count+1 ) ;
 	}
 
-	function LOAmakeLink ($link, $title, $sep=false, $showactivelink,$id, $current_id, $metadesc, $cssstyle)
+	function LOAmakeLink (string $link, string $title, bool $sep, $showactivelink,$id, $current_id, $metadesc, $cssstyle)
 	{
+		//$sep=false;
+		
 		$metadesc_=urldecode($metadesc);
 		$metadesc_=str_replace('"','',$metadesc_);
 
@@ -282,8 +284,10 @@ function Options ( $opts, &$catid )
 		return ( $sep ? '<li class="separator">'.$this->JTextExtended($title).'</li>':'<li>'.$linkitem .'</li>' );
 	}
 	
-	function LOAmakeLink_forTable ($link, $title, $sep=false, $showactivelink, $id, $current_id, $metadesc, $cssstyle)
+	function LOAmakeLink_forTable (string $link, string $title, bool $sep, $showactivelink, $id, $current_id, $metadesc, $cssstyle)
 	{
+		//$sep=false;
+		
 		$metadesc_=urldecode($metadesc);
 		$metadesc_=str_replace('"','',$metadesc_);
 
@@ -294,7 +298,7 @@ function Options ( $opts, &$catid )
 		return $linkitem;
 	}
 
-	function LOAmakeArticleCleanLink ( $row,$showactivelink, $valueoption_withparams, $cssstyle)
+	function LOAmakeArticleCleanLink ($row, $showactivelink, $valueoption_withparams, $cssstyle)
 	{
 		$jinput = JFactory::getApplication()->input;
 
@@ -447,6 +451,7 @@ function LOAmakeArticleLink ($row, $showactivelink, $valueoption_withparams, $cs
 
 	return $this->LOAmakeLink ( $aLink, $this->JTextExtended($title),false, $showactivelink,$row->id,$jinput->getInt ('id', 0), $row->metadesc, $cssstyle);
 }
+
 function LOAmakeArticleLinkOnly($row)
 {
     $jinput = JFactory::getApplication()->input;
@@ -777,8 +782,9 @@ function LOAmakeMenuCleanLink($row,$showactivelink, $valueoption_str, $cssstyle,
 
 }
 
-function LOAmakeMenuCleanLink_Item( $row,$showactivelink, $valueoption, $cssstyle,$addlink=true,$imagereplacer)
+function LOAmakeMenuCleanLink_Item( $row,$showactivelink, string $valueoption, string $cssstyle, bool $addlink, string $imagereplacer)
 {
+	//$addlink=true
     $jinput = JFactory::getApplication()->input;
 
 	if($valueoption=='title' or $valueoption=='name')
@@ -1234,8 +1240,10 @@ function LOAgetListToReplace($par,&$options,&$text)
 }
 
 
-function LOAcsv_explode($delim=',', $str, $enclose='"', $preserve=false)
+function LOAcsv_explode(string $delim, string $str, $enclose='"', $preserve=false)
 {
+	//$delim=',';
+	
 		$resArr = array();
 		$n = 0;
 		$expEncArr = explode($enclose, $str);
